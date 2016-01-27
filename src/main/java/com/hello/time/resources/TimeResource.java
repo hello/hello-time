@@ -44,7 +44,6 @@ public class TimeResource extends BaseResource {
     @Inject
     RolloutClient featureFlipper;
 
-
     private static final Logger LOGGER = LoggerFactory.getLogger(TimeResource.class);
     private static final String LOCAL_OFFICE_IP_ADDRESS = "199.87.82.114";
     private static final String FIRMWARE_DEFAULT = "0";
@@ -52,14 +51,11 @@ public class TimeResource extends BaseResource {
     private final KeyStore keyStore;
 
     private final KinesisLoggerFactory kinesisLoggerFactory;
-    private final Boolean debug;
 
     private final GroupFlipper groupFlipper;
 
     private final MetricRegistry metrics;
     protected Meter senseClockOutOfSync;
-    protected Meter senseClockOutOfSync3h;
-    protected Meter pillClockOutOfSync;
     protected Histogram drift;
 
     @Context
@@ -68,18 +64,15 @@ public class TimeResource extends BaseResource {
     public TimeResource(final KeyStore keyStore,
                         final KinesisLoggerFactory kinesisLoggerFactory,
                         final GroupFlipper groupFlipper,
-                        final MetricRegistry metricRegistry,
-                        final Boolean debug) {
+                        final MetricRegistry metricRegistry) {
 
         this.keyStore = keyStore;
         this.kinesisLoggerFactory = kinesisLoggerFactory;
 
         this.metrics= metricRegistry;
-        this.debug = debug;
         this.groupFlipper = groupFlipper;
+        //TODO: Figure out what metrics are valuable and update these.
         this.senseClockOutOfSync = metrics.meter(name(TimeResource.class, "sense-clock-out-sync"));
-        this.senseClockOutOfSync3h = metrics.meter(name(TimeResource.class, "sense-clock-out-sync-3h"));
-        this.pillClockOutOfSync = metrics.meter(name(TimeResource.class, "pill-clock-out-sync"));
         this.drift = metrics.histogram(name(TimeResource.class, "sense-drift"));
     }
 
@@ -92,9 +85,7 @@ public class TimeResource extends BaseResource {
     public byte[] receiveTimeRequest(final byte[] body) {
 
         final TimeStamp ntpReceiveTimestamp = new TimeStamp(new Date());
-
         final SignedMessage signedMessage = SignedMessage.parse(body);
-        Ntp.NTPDataPacket data = null;
 
         String debugSenseId = this.request.getHeader(HelloHttpHeader.SENSE_ID);
         if (debugSenseId == null) {
@@ -104,7 +95,9 @@ public class TimeResource extends BaseResource {
         final String topFW = (this.request.getHeader(HelloHttpHeader.TOP_FW_VERSION) != null) ? this.request.getHeader(HelloHttpHeader.TOP_FW_VERSION) : FIRMWARE_DEFAULT;
         final String middleFW = (this.request.getHeader(HelloHttpHeader.MIDDLE_FW_VERSION) != null) ? this.request.getHeader(HelloHttpHeader.MIDDLE_FW_VERSION) : FIRMWARE_DEFAULT;
 
-        LOGGER.debug("DebugSenseId device_id = {}", debugSenseId);
+        LOGGER.debug("action=request-time device_id = {}", debugSenseId);
+
+        Ntp.NTPDataPacket data = null;
 
         try {
             data = Ntp.NTPDataPacket.parseFrom(signedMessage.body);
@@ -113,9 +106,6 @@ public class TimeResource extends BaseResource {
             LOGGER.error(errorMessage);
             return plainTextError(Response.Status.BAD_REQUEST, "bad request");
         }
-        LOGGER.debug("Received protobuf message {}", TextFormat.shortDebugString(data));
-
-
         LOGGER.debug("Received valid protobuf {}", data.toString());
         LOGGER.debug("Received protobuf message {}", TextFormat.shortDebugString(data));
 

@@ -187,8 +187,7 @@ public class HelloTime extends Application<SuripuConfiguration> {
         senseKeyStore,
         kinesisLoggerFactory,
         groupFlipper,
-        environment.metrics(),
-        configuration.getDebug()
+        environment.metrics()
     );
 
     environment.jersey().register(timeResource);

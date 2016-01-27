@@ -38,7 +38,7 @@ import java.util.List;
 import static com.codahale.metrics.MetricRegistry.name;
 
 
-@Path("/time")
+@Path("/")
 public class TimeResource extends BaseResource {
 
     @Inject

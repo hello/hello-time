@@ -1,0 +1,52 @@
+language: java
+install: mvn --version
+sudo: false
+env:
+  global:
+  - APP_NAME=hello-time
+  - BUILD_NUMBER=0.1.$TRAVIS_BUILD_NUMBER
+script:
+- echo "MAVEN_OPTS='-Xmx2g -XX:MaxPermSize=512m'" > ~/.mavenrc
+- export TEMP_DIR="/tmp/$APP_NAME"
+- mkdir -p $TEMP_DIR/opt/hello
+- mkdir -p $TEMP_DIR/etc/hello
+- mkdir -p $TEMP_DIR/etc/init/
+- mkdir deb-pkg
+- cp configs/$APP_NAME.prod.yml $TEMP_DIR/etc/hello/$APP_NAME.yml
+- cp init/$APP_NAME.conf $TEMP_DIR/etc/init/
+- mvn --settings settings.xml clean test
+before_deploy:
+- mvn clean
+- mvn versions:set -DnewVersion=$BUILD_NUMBER
+- mvn versions:commit
+- mvn --settings settings.xml -DskipITs deploy
+- gem install fpm
+- cp target/$APP_NAME-$BUILD_NUMBER.jar $TEMP_DIR/opt/hello/$APP_NAME.jar
+- fpm --force -s dir -C $TEMP_DIR -t deb --name "$APP_NAME" --version $BUILD_NUMBER --config-files etc/hello .
+- cp ${APP_NAME}_${BUILD_NUMBER}_amd64.deb configs/
+after_deploy:
+- git config --global user.email "builds@travis-ci.com"
+- git config --global user.name "Travis CI"
+- export GIT_TAG=$APP_NAME-$TRAVIS_BRANCH-$BUILD_NUMBER
+- git tag $GIT_TAG -a -m "Generated tag from TravisCI build $TRAVIS_BUILD_NUMBER"
+- git push --quiet git@github.com:hello/hello-time.git --tags
+deploy:
+- provider: s3
+  access_key_id: $CI_DEPLOY_USERNAME
+  secret_access_key: $CI_DEPLOY_PASSWORD
+  bucket: hello-deploy
+  skip_cleanup: true
+  local_dir: configs
+  upload-dir: packages/com/hello/time/$APP_NAME/$BUILD_NUMBER
+  region: us-east-1
+  on:
+    tags: false
+    branch: PRODUCTION
+branches:
+  only:
+  - master
+  - PRODUCTION
+notifications:
+  email:
+  - josef+travis-time@sayhello.com
+

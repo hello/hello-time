@@ -9,41 +9,6 @@ graphite:
     - xx-responses
     - com.hello
 
-sensors_db:
-  driverClass: org.postgresql.Driver
-  user: sensors
-  password: hello-sensors
-  url: jdbc:postgresql://sensors-1.cdawj8qazvva.us-east-1.rds.amazonaws.com:5432/sensors1
-  properties:
-    hibernate.dialect: org.hibernate.spatial.dialect.postgis.PostgisDialect
-
-  # any properties specific to your JDBC driver:
-  properties:
-    charSet: UTF-8
-
-  # the maximum amount of time to wait on an empty pool before throwing an exception
-  maxWaitForConnection: 1s
-
-  # the SQL query to run when validating a connection's liveness
-  validationQuery: "/* MyService Health Check */ SELECT 1"
-
-  initialSize: 2
-
-  # the minimum number of connections to keep open
-  minSize: 2
-
-  # the maximum number of connections to keep open
-  maxSize: 8
-
-  # whether or not idle connections should be validated
-  checkConnectionWhileIdle: false
-
-  # the amount of time to sleep between runs of the idle connection validation, abandoned cleaner and idle pool resizing
-  evictionInterval: 10s
-
-  # the minimum amount of time an connection must sit idle in the pool before it is eligible for eviction
-  minIdleTime: 1 minute
-
 common_db:
   driverClass: org.postgresql.Driver
   user: common
@@ -86,25 +51,25 @@ server:
   applicationContextPath: /
   applicationConnectors:
     - type: http
-      port: 5555
+      port: 1111
       idleTimeout: 25 seconds
   adminConnectors:
     - type: http
-      port: 5556
+      port: 2222
       idleTimeout: 25 seconds
   requestLog:
     timeZone: UTC
     appenders:
       - type: file
-        currentLogFilename: /var/log/suripu-service/suripu-service-access.log
+        currentLogFilename: /var/log/hello-time/hello-time-access.log
         threshold: ALL
         archive: true
-        archivedLogFilenamePattern: /var/log/suripu-service/suripu-service-access-%d{yyyy-MM-dd}.log.gz
+        archivedLogFilenamePattern: /var/log/hello-time/hello-time-access-%d{yyyy-MM-dd}.log.gz
         archivedFileCount: 7
       - type: papertrail
         host: logs2.papertrailapp.com
         port: 11366
-        ident: suripu-service-prod
+        ident: hello-time-prod
 
 logging:
   level: INFO
@@ -113,13 +78,13 @@ logging:
   appenders:
     - type: file
       threshold: INFO
-      currentLogFilename: /var/log/suripu-service/suripu-service.log
-      archivedLogFilenamePattern: /var/log/suripu-service/suripu-service-%d{yyyy-MM-dd}.log.gz
+      currentLogFilename: /var/log/hello-time/hello-time.log
+      archivedLogFilenamePattern: /var/log/hello-time/hello-time-%d{yyyy-MM-dd}.log.gz
       archivedFileCount: 7
     - type: papertrail
       host: logs2.papertrailapp.com
       port: 11366
-      ident: suripu-service-prod
+      ident: hello-time-prod
       # timezone: UTC
       # facility: USER
       # sendLocalName: true
@@ -127,70 +92,23 @@ logging:
 kinesis:
   endpoint : https://kinesis.us-east-1.amazonaws.com
   streams :
-    audio_features : audio_features
     activity_stream : activity_stream
-    registrations: registrations
-    encode_audio: encode_audio
-    batch_pill_data : batch_pill_data
-    sense_sensors_data : sense_sensors_data
     logs: logs
-
-
-audio_bucket_name : hello-data
-
-room_conditions: 1
-
-sense_upload_configuration:
-  non_peak_hour_lower_bound: 9
-  non_peak_hour_upper_bound: 20
-  week_days_only: false
-  increased_non_peak_interval: 7
-  increased_peak_interval: 5
-  default_interval: 1
-  
-ota_configuration:
-  start_update_window_hour: 11
-  end_update_window_hour: 20
-  device_uptime_delay: 60
-  always_ota_groups: [chris-dev, video-photoshoot, victor]
-  s3cache_expire_minutes: 20
 
 kinesis_logger:
   stream_name: logs
   enabled : true
   buffer_size: 100
-  origin: suripu-service
-
-aws_access_key_s3: AKIAJVQV7XJU23UWILSQ
-aws_access_secret_s3: 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
-
-ring_duration_sec: 240
-
+  origin: hello-time
 
 dynamodb:
   region: us-east-1
   tables:
-    alarm_info : prod_alarm_info
     features : features
-    firmware_upgrade_path : fw_upgrade_path
-    firmware_versions : prod_firmware_versions_mapping
-    ota_history : ota_history
-    pill_key_store : pill_key_store
-    ring_time_history: prod_ring_history_by_account
     sense_key_store : key_store
-    sync_response_commands : prod_response_commands
     teams : teams
-    calibration: prod_calibration
 
   endpoints:
-      alarm_info : http://dynamodb.us-east-1.amazonaws.com
       features : http://dynamodb.us-east-1.amazonaws.com
-      firmware_upgrade_path : http://dynamodb.us-east-1.amazonaws.com
-      firmware_versions : http://dynamodb.us-east-1.amazonaws.com
-      ota_history : http://dynamodb.us-east-1.amazonaws.com
-      pill_key_store : http://dynamodb.us-east-1.amazonaws.com
-      ring_time_history: http://dynamodb.us-east-1.amazonaws.com
       sense_key_store : http://dynamodb.us-east-1.amazonaws.com
-      sync_response_commands : http://dynamodb.us-east-1.amazonaws.com
       teams : http://dynamodb.us-east-1.amazonaws.com
-      calibration : http://dynamodb.us-east-1.amazonaws.com

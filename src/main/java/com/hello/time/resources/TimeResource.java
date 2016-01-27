@@ -67,9 +67,9 @@ public class TimeResource extends BaseResource {
 
     public TimeResource(final KeyStore keyStore,
                         final KinesisLoggerFactory kinesisLoggerFactory,
-                        final Boolean debug,
                         final GroupFlipper groupFlipper,
-                        final MetricRegistry metricRegistry) {
+                        final MetricRegistry metricRegistry,
+                        final Boolean debug) {
 
         this.keyStore = keyStore;
         this.kinesisLoggerFactory = kinesisLoggerFactory;

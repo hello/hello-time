@@ -16,15 +16,6 @@ public class SuripuConfiguration extends Configuration {
 
     @Valid
     @NotNull
-    @JsonProperty("sensors_db")
-    private DataSourceFactory sensorsDB = new DataSourceFactory();
-
-    public DataSourceFactory getSensorsDB() {
-        return sensorsDB;
-    }
-
-    @Valid
-    @NotNull
     @JsonProperty("common_db")
     private DataSourceFactory commonDB = new DataSourceFactory();
 
@@ -58,16 +49,6 @@ public class SuripuConfiguration extends Configuration {
         return graphite;
     }
 
-
-    @Valid
-    @NotNull
-    @JsonProperty("audio_bucket_name")
-    private String audioBucketName;
-
-    public String getAudioBucketName() {
-        return audioBucketName;
-    }
-
     @Valid
     @NotNull
     @JsonProperty("kinesis")
@@ -87,27 +68,6 @@ public class SuripuConfiguration extends Configuration {
     private KinesisLoggerConfiguration kinesisLoggerConfiguration;
     public KinesisLoggerConfiguration kinesisLoggerConfiguration() {
         return kinesisLoggerConfiguration;
-    }
-
-    @JsonProperty("aws_access_key_s3")
-    private String awsAccessKeyS3;
-    public String getAwsAccessKeyS3() {
-        return awsAccessKeyS3;
-    }
-
-    @JsonProperty("aws_access_secret_s3")
-    private String awsAccessSecretS3;
-    public String getAwsAccessSecretS3() {
-        return awsAccessSecretS3;
-    }
-
-    @Valid
-    @NotNull
-    @Min(60)
-    @JsonProperty("ring_duration_sec")
-    private Integer ringDuration;
-    public Integer getRingDuration(){
-        return this.ringDuration;
     }
 
     @Valid

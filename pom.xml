@@ -9,7 +9,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.7</java.version>
-        <suripu.version>0.6.40</suripu.version>
+        <suripu.version>0.6.41</suripu.version>
         <jodatime.version>20150319</jodatime.version>
         <dropwizard.version>0.8.2</dropwizard.version>
         <metrics.version>3.1.0</metrics.version>
@@ -145,9 +145,7 @@
         <dependency>
             <groupId>com.hello.suripu</groupId>
             <artifactId>suripu-core</artifactId>
-            <version>0.6.41-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>/Users/jnorgan/HelloCode/suripu/suripu-core/target/suripu-core-0.6.41-SNAPSHOT.jar </systemPath>
+            <version>${suripu.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.yammer.dropwizard</groupId>
@@ -167,9 +165,7 @@
         <dependency>
             <groupId>com.hello.suripu</groupId>
             <artifactId>suripu-api</artifactId>
-            <version>0.6.41-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>/Users/jnorgan/HelloCode/suripu/suripu-api/target/suripu-api-0.6.41-SNAPSHOT.jar </systemPath>
+            <version>${suripu.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.yammer.dropwizard</groupId>

@@ -5,6 +5,8 @@ env:
   global:
   - APP_NAME=hello-time
   - BUILD_NUMBER=0.1.$TRAVIS_BUILD_NUMBER
+  - secure: iuAMPWByzc4JaN22Ih7nwefaxJffRhJ5jMk9vVPHIoP/PRwaqLfXjUVr3yiKEo020tvyi+cu9JiSE2FlmXc6Hb4Fto0x25V8XwJezMfFsSDtBwm3REcgJdB5faCDdxZnduPjYbxqoNZGIPoSTxepicg1v+aX/3t1VdhyHLTy16+4B6bYzLeJSGTYuIF4OSmOznXueASFsa0EUj0pTJqv2LWpXkxgPDRRiJKzkuuuWKSV/6bnwYxrgaIrYuD7XSpNGf5UvHs2jNBlHsS7Tk1Ahyd8TYbIukbcVTOvwyMB8Xzv6emAnXIcJ/gWpdmgbHupquq6GlMTlDsEz2OuKPWIbGlWJUv05pGLw9Tdv40jnTZcxjKfP0pBLncZY9jJ63q852dQv3Emwm44miVfGOZ8MRQ9C1DT0vAyGmAsY5uCeCM7lIHN4Vsk4XOBK/Ef8SPBcRZxvvDkxqhzC/by8I0TVenR2h5JS/Jh0Ecv26pMWOyHH5XXztUvg3ngLxvhMJO7a3O/BUKaym03L4kWggkodSl0+lFWUd8L4H4KuQ0H1dPCKcILm/gittqZpbZjD2U4iCPxEn6/4e2kZ3H4IJTiN5miFlxxh3+FB/l/0QgFmV9Tr6D2Dnpw6bn9Zq6C/v0UoUPenUCzcsAHxe7jyaZCVlam0x9VobFZ9vewQ11C51g=
+  - secure: T1JOy7VEDmmdielW9ARUOZTP9wxQ3jO2Ubsjpoomli9mLPrt+0rUo+1dVMxXDJgx2VVVPSXF5/8EBVJrhsNHJy4dtbXyHlhvdggjtrSNIcNdxUMjzRKKrOFfmyHzNBJE38DNO+BVPcuISOuTxEKODaz0sZPfFGFRIwEjLtm1sSSKA5rC1i6cr9EF4pr2G4+yvHRqZ0xsARjHCYF9dW+NkYLN1Wl2gY/CmX026z6UEE7jzeimiSv4mcv9ht/tDu0VJ702gBWGpRXYQxEgRTwS7CuHFWNSWhYIGLICfPeXaJ+NNDwsCzh921UikIhhcXREw9M+FyUk9uFajCV3YutFt6HN25Zafr6K3RsVMYctv/cGIcqaT35/7XSBkgRNAvwt3NEXes4ZlUWszvXS/2BNPOPxI4g3vLGMk0cPrU9YdsroCZHG7hRg4fab430TiOjQq0B4gp3TG+w5JQu17+7E6Rrm0h+uaac7dLUDL3Ga85K+EmaW16EkO4W91dSyECTGKIhn6M3sgFRia+YGGcto1USIifrZU/FpI70hcjVkg38Rvf15JMXc9DEg+DEy9MO1pVvFfz8qL+XeGfX46fAg10QfYvmrNpFn1R8094WC6t03h2lJeLnuBv8gSTC8GzfYAMGB/KRQrNnKfLtpjcuPv8wp7SGD6Zbb0WjGDC5Frwo=
 script:
 - echo "MAVEN_OPTS='-Xmx2g -XX:MaxPermSize=512m'" > ~/.mavenrc
 - export TEMP_DIR="/tmp/$APP_NAME"
@@ -22,7 +24,8 @@ before_deploy:
 - mvn --settings settings.xml -DskipITs deploy
 - gem install fpm
 - cp target/$APP_NAME-$BUILD_NUMBER.jar $TEMP_DIR/opt/hello/$APP_NAME.jar
-- fpm --force -s dir -C $TEMP_DIR -t deb --name "$APP_NAME" --version $BUILD_NUMBER --config-files etc/hello .
+- fpm --force -s dir -C $TEMP_DIR -t deb --name "$APP_NAME" --version $BUILD_NUMBER
+  --config-files etc/hello .
 - cp ${APP_NAME}_${BUILD_NUMBER}_amd64.deb configs/
 after_deploy:
 - git config --global user.email "builds@travis-ci.com"
@@ -49,4 +52,3 @@ branches:
 notifications:
   email:
   - josef+travis-time@sayhello.com
-

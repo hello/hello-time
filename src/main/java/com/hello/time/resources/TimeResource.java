@@ -109,9 +109,9 @@ public class TimeResource extends BaseResource {
         LOGGER.debug("Received valid protobuf {}", data.toString());
         LOGGER.debug("Received protobuf message {}", TextFormat.shortDebugString(data));
 
-        if (!data.hasReferenceTs()) {
-            LOGGER.error("error=empty-reference_ts");
-            return plainTextError(Response.Status.BAD_REQUEST, "empty reference ts");
+        if (!data.hasOriginTs()) {
+            LOGGER.error("error=empty-origin_ts");
+            return plainTextError(Response.Status.BAD_REQUEST, "empty origin timestamp");
         }
 
 

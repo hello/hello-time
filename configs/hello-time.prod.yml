@@ -74,10 +74,10 @@ server:
 logging:
   level: INFO
   loggers:
-    com.hello.suripu: INFO
+    com.hello.time: DEBUG
   appenders:
     - type: file
-      threshold: INFO
+      threshold: DEBUG
       currentLogFilename: /var/log/hello-time/hello-time.log
       archivedLogFilenamePattern: /var/log/hello-time/hello-time-%d{yyyy-MM-dd}.log.gz
       archivedFileCount: 7

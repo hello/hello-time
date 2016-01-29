@@ -24,8 +24,7 @@ before_deploy:
 - mvn --settings settings.xml -DskipITs deploy
 - gem install fpm
 - cp target/$APP_NAME-$BUILD_NUMBER.jar $TEMP_DIR/opt/hello/$APP_NAME.jar
-- fpm --force -s dir -C $TEMP_DIR -t deb --name "$APP_NAME" --version $BUILD_NUMBER
-  --config-files etc/hello .
+- fpm --force -s dir -C $TEMP_DIR -t deb --name "$APP_NAME" --version $BUILD_NUMBER --config-files etc/hello .
 - cp ${APP_NAME}_${BUILD_NUMBER}_amd64.deb configs/
 after_deploy:
 - git config --global user.email "builds@travis-ci.com"

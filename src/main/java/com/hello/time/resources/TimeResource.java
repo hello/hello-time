@@ -98,14 +98,12 @@ public class TimeResource extends BaseResource {
             LOGGER.error(errorMessage);
             return plainTextError(Response.Status.BAD_REQUEST, "bad request");
         }
-        LOGGER.debug("Received valid protobuf {}", data.toString());
         LOGGER.debug("Received protobuf message {}", TextFormat.shortDebugString(data));
 
         if (!data.hasOriginTs()) {
             LOGGER.error("error=empty-origin_ts");
             return plainTextError(Response.Status.BAD_REQUEST, "empty origin timestamp");
         }
-
 
         final String deviceId = debugSenseId;
         final List<String> groups = groupFlipper.getGroups(deviceId);

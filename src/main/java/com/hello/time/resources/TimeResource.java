@@ -12,7 +12,6 @@ import com.hello.suripu.core.db.KeyStore;
 import com.hello.suripu.core.db.KeyStoreDynamoDB;
 import com.hello.suripu.core.flipper.FeatureFlipper;
 import com.hello.suripu.core.flipper.GroupFlipper;
-import com.hello.suripu.core.logging.KinesisLoggerFactory;
 import com.hello.suripu.core.resources.BaseResource;
 import com.hello.suripu.core.util.HelloHttpHeader;
 import com.hello.suripu.core.util.SignedMessage;
@@ -49,11 +48,7 @@ public class TimeResource extends BaseResource {
     private static final String FIRMWARE_DEFAULT = "0";
 
     private final KeyStore keyStore;
-
-    private final KinesisLoggerFactory kinesisLoggerFactory;
-
     private final GroupFlipper groupFlipper;
-
     private final MetricRegistry metrics;
     protected Meter senseClockOutOfSync;
     protected Histogram drift;
@@ -62,13 +57,10 @@ public class TimeResource extends BaseResource {
     HttpServletRequest request;
 
     public TimeResource(final KeyStore keyStore,
-                        final KinesisLoggerFactory kinesisLoggerFactory,
                         final GroupFlipper groupFlipper,
                         final MetricRegistry metricRegistry) {
 
         this.keyStore = keyStore;
-        this.kinesisLoggerFactory = kinesisLoggerFactory;
-
         this.metrics= metricRegistry;
         this.groupFlipper = groupFlipper;
         //TODO: Figure out what metrics are valuable and update these.

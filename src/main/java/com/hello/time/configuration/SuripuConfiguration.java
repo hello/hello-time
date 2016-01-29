@@ -16,15 +16,6 @@ public class SuripuConfiguration extends Configuration {
 
     @Valid
     @NotNull
-    @JsonProperty("common_db")
-    private DataSourceFactory commonDB = new DataSourceFactory();
-
-    public DataSourceFactory getCommonDB() {
-        return commonDB;
-    }
-
-    @Valid
-    @NotNull
     @JsonProperty("metrics_enabled")
     private Boolean metricsEnabled;
 
@@ -47,27 +38,6 @@ public class SuripuConfiguration extends Configuration {
 
     public GraphiteConfiguration getGraphite() {
         return graphite;
-    }
-
-    @Valid
-    @NotNull
-    @JsonProperty("kinesis")
-    private KinesisConfiguration kinesisConfiguration;
-
-    public KinesisConfiguration getKinesisConfiguration() {
-        return kinesisConfiguration;
-    }
-
-    @JsonProperty("room_conditions")
-    private Integer roomConditions;
-    public Integer getRoomConditions() {
-        return roomConditions;
-    }
-
-    @JsonProperty("kinesis_logger")
-    private KinesisLoggerConfiguration kinesisLoggerConfiguration;
-    public KinesisLoggerConfiguration kinesisLoggerConfiguration() {
-        return kinesisLoggerConfiguration;
     }
 
     @Valid

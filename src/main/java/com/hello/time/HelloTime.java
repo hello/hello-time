@@ -4,7 +4,6 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.kinesis.AmazonKinesisAsyncClient;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -16,34 +15,16 @@ import com.hello.dropwizard.mikkusu.resources.PingResource;
 import com.hello.dropwizard.mikkusu.resources.VersionResource;
 import com.hello.suripu.core.ObjectGraphRoot;
 import com.hello.suripu.core.db.TeamStore;
-import com.hello.suripu.core.db.util.JodaArgumentFactory;
-import com.hello.suripu.core.db.util.PostgresIntegerArrayArgumentFactory;
 import com.hello.suripu.core.flipper.DynamoDBAdapter;
 import com.hello.suripu.core.flipper.GroupFlipper;
-import com.hello.suripu.core.oauth.stores.PersistentApplicationStore;
 import com.hello.suripu.coredw8.filters.SlowRequestsFilter;
-import com.hello.suripu.coredw8.db.AccessTokenDAO;
 import com.hello.suripu.coredw8.health.DynamoDbHealthCheck;
-import com.hello.suripu.coredw8.health.KinesisHealthCheck;
 import com.hello.suripu.coredw8.clients.AmazonDynamoDBClientFactory;
 import com.hello.suripu.core.configuration.DynamoDBTableName;
-import com.hello.suripu.core.configuration.QueueName;
-import com.hello.suripu.core.db.ApplicationsDAO;
 import com.hello.suripu.core.db.FeatureStore;
 import com.hello.suripu.core.db.KeyStore;
 import com.hello.suripu.core.db.KeyStoreDynamoDB;
-import com.hello.suripu.core.logging.DataLogger;
-import com.hello.suripu.core.logging.KinesisLoggerFactory;
 import com.hello.suripu.coredw8.managers.DynamoDBClientManaged;
-import com.hello.suripu.coredw8.managers.KinesisClientManaged;
-import com.hello.suripu.coredw8.oauth.AccessToken;
-import com.hello.suripu.coredw8.oauth.AuthDynamicFeature;
-import com.hello.suripu.coredw8.oauth.AuthValueFactoryProvider;
-import com.hello.suripu.coredw8.oauth.OAuthAuthenticator;
-import com.hello.suripu.coredw8.oauth.OAuthAuthorizer;
-import com.hello.suripu.coredw8.oauth.OAuthCredentialAuthFilter;
-import com.hello.suripu.coredw8.oauth.ScopesAllowedDynamicFeature;
-import com.hello.suripu.coredw8.oauth.stores.PersistentAccessTokenStore;
 import com.hello.suripu.coredw8.util.CustomJSONExceptionMapper;
 import com.hello.time.configuration.SuripuConfiguration;
 import com.hello.time.modules.RolloutModule;
@@ -52,7 +33,6 @@ import com.librato.rollout.RolloutClient;
 
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.joda.time.DateTimeZone;
-import org.skife.jdbi.v2.DBI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,8 +44,6 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 
-import io.dropwizard.jdbi.DBIFactory;
-import io.dropwizard.jdbi.OptionalContainerFactory;
 import io.dropwizard.jdbi.bundles.DBIExceptionsBundle;
 import io.dropwizard.Application;
 import io.dropwizard.server.AbstractServerFactory;
@@ -91,13 +69,6 @@ public class HelloTime extends Application<SuripuConfiguration> {
   public void run(final SuripuConfiguration configuration, Environment environment) throws Exception {
     environment.jersey().register(new JacksonProtobufProvider());
 
-    final DBIFactory factory = new DBIFactory();
-    final DBI commonDB = factory.build(environment, configuration.getCommonDB(), "postgresql");
-
-    commonDB.registerArgumentFactory(new JodaArgumentFactory());
-    commonDB.registerContainerFactory(new OptionalContainerFactory());
-    commonDB.registerArgumentFactory(new PostgresIntegerArrayArgumentFactory());
-
     // Checks Environment first and then instance profile.
     final AWSCredentialsProvider awsCredentialsProvider = new DefaultAWSCredentialsProviderChain();
 
@@ -106,16 +77,6 @@ public class HelloTime extends Application<SuripuConfiguration> {
     final AmazonDynamoDBClientFactory dynamoDBFactory = AmazonDynamoDBClientFactory.create(awsCredentialsProvider, clientConfig, configuration.dynamoDBConfiguration());
 
     final AmazonDynamoDB senseKeyStoreDynamoDBClient = dynamoDBFactory.getForTable(DynamoDBTableName.SENSE_KEY_STORE);
-
-    final ClientConfiguration kinesisClientConfiguration = new ClientConfiguration().withMaxConnections(100);
-    final AmazonKinesisAsyncClient kinesisClient = new AmazonKinesisAsyncClient(awsCredentialsProvider, kinesisClientConfiguration);
-    kinesisClient.setEndpoint(configuration.getKinesisConfiguration().getEndpoint());
-
-    final KinesisLoggerFactory kinesisLoggerFactory = new KinesisLoggerFactory(
-        kinesisClient,
-        configuration.getKinesisConfiguration().getStreams()
-    );
-
     final KeyStore senseKeyStore = new KeyStoreDynamoDB(
         senseKeyStoreDynamoDBClient,
         tableNames.get(DynamoDBTableName.SENSE_KEY_STORE),
@@ -152,27 +113,12 @@ public class HelloTime extends Application<SuripuConfiguration> {
 
     environment.jersey().register(new CustomJSONExceptionMapper(configuration.getDebug()));
 
-    final AccessTokenDAO accessTokenDAO = commonDB.onDemand(AccessTokenDAO.class);
-    final ApplicationsDAO applicationsDAO = commonDB.onDemand(ApplicationsDAO.class);
-    final PersistentApplicationStore applicationStore = new PersistentApplicationStore(applicationsDAO);
-    final PersistentAccessTokenStore tokenStore = new PersistentAccessTokenStore(accessTokenDAO, applicationStore);
-    final DataLogger activityLogger = kinesisLoggerFactory.get(QueueName.ACTIVITY_STREAM);
     final String namespace = (configuration.getDebug()) ? "dev" : "prod";
     final AmazonDynamoDB featuresDynamoDBClient = dynamoDBFactory.getForTable(DynamoDBTableName.FEATURES);
     final FeatureStore featureStore = new FeatureStore(featuresDynamoDBClient, tableNames.get(DynamoDBTableName.FEATURES), namespace);
     final AmazonDynamoDB teamStoreDynamoDBClient = dynamoDBFactory.getForTable(DynamoDBTableName.TEAMS);
     final TeamStore teamStore = new TeamStore(teamStoreDynamoDBClient, tableNames.get(DynamoDBTableName.TEAMS));
     final GroupFlipper groupFlipper = new GroupFlipper(teamStore, 30);
-
-    environment.jersey().register(new AuthDynamicFeature(new OAuthCredentialAuthFilter.Builder<AccessToken>()
-        .setAuthenticator(new OAuthAuthenticator(tokenStore))
-        .setAuthorizer(new OAuthAuthorizer())
-        .setRealm("SUPER SECRET STUFF")
-        .setPrefix("Bearer")
-        .setLogger(activityLogger)
-        .buildAuthFilter()));
-    environment.jersey().register(ScopesAllowedDynamicFeature.class);
-    environment.jersey().register(new AuthValueFactoryProvider.Binder<>(AccessToken.class));
 
     final RolloutModule module = new RolloutModule(featureStore, 30);
     ObjectGraphRoot.getInstance().init(module);
@@ -185,7 +131,6 @@ public class HelloTime extends Application<SuripuConfiguration> {
 
     final TimeResource timeResource = new TimeResource(
         senseKeyStore,
-        kinesisLoggerFactory,
         groupFlipper,
         environment.metrics()
     );
@@ -200,12 +145,10 @@ public class HelloTime extends Application<SuripuConfiguration> {
     // Manage the lifecycle of our clients
     environment.lifecycle().manage(new DynamoDBClientManaged(senseKeyStoreDynamoDBClient));
     environment.lifecycle().manage(new DynamoDBClientManaged(featuresDynamoDBClient));
-    environment.lifecycle().manage(new KinesisClientManaged(kinesisClient));
 
     // Make sure we can connect
     environment.healthChecks().register("keystore-healthcheck", new DynamoDbHealthCheck(senseKeyStoreDynamoDBClient));
     environment.healthChecks().register("features-healthcheck", new DynamoDbHealthCheck(featuresDynamoDBClient));
-    environment.healthChecks().register("kinesis-healthcheck", new KinesisHealthCheck(kinesisClient));
   }
 
 

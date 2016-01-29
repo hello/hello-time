@@ -9,41 +9,6 @@ graphite:
     - xx-responses
     - com.hello
 
-common_db:
-  driverClass: org.postgresql.Driver
-  user: common
-  password: hello-common
-  url: jdbc:postgresql://common.cdawj8qazvva.us-east-1.rds.amazonaws.com:5432/common
-  properties:
-    hibernate.dialect: org.hibernate.spatial.dialect.postgis.PostgisDialect
-
-  # any properties specific to your JDBC driver:
-  properties:
-    charSet: UTF-8
-
-  # the maximum amount of time to wait on an empty pool before throwing an exception
-  maxWaitForConnection: 1s
-
-  # the SQL query to run when validating a connection's liveness
-  validationQuery: "/* MyService Health Check */ SELECT 1"
-
-  initialSize: 8
-
-  # the minimum number of connections to keep open
-  minSize: 8
-
-  # the maximum number of connections to keep open
-  maxSize: 32
-
-  # whether or not idle connections should be validated
-  checkConnectionWhileIdle: false
-
-  # the amount of time to sleep between runs of the idle connection validation, abandoned cleaner and idle pool resizing
-  evictionInterval: 10s
-
-  # the minimum amount of time an connection must sit idle in the pool before it is eligible for eviction
-  minIdleTime: 1 minute
-
 server:
   adminMinThreads: 1
   adminMaxThreads: 64
@@ -55,7 +20,7 @@ server:
       idleTimeout: 25 seconds
   adminConnectors:
     - type: http
-      port: 2222
+      port: 1112
       idleTimeout: 25 seconds
   requestLog:
     timeZone: UTC
@@ -88,18 +53,6 @@ logging:
       # timezone: UTC
       # facility: USER
       # sendLocalName: true
-
-kinesis:
-  endpoint : https://kinesis.us-east-1.amazonaws.com
-  streams :
-    activity_stream : activity_stream
-    logs: logs
-
-kinesis_logger:
-  stream_name: logs
-  enabled : true
-  buffer_size: 100
-  origin: hello-time
 
 dynamodb:
   region: us-east-1

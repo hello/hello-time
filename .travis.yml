@@ -44,6 +44,17 @@ deploy:
   on:
     tags: false
     branch: PRODUCTION
+- provider: s3
+  access_key_id: $CI_DEPLOY_USERNAME
+  secret_access_key: $CI_DEPLOY_PASSWORD
+  bucket: hello-deploy
+  skip_cleanup: true
+  local_dir: configs
+  upload-dir: packages/com/hello/time/$APP_NAME/canary/$BUILD_NUMBER
+  region: us-east-1
+  on:
+    tags: false
+    branch: canary
 branches:
   only:
   - master

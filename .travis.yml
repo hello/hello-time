@@ -59,6 +59,7 @@ branches:
   only:
   - master
   - PRODUCTION
+  - canary
 notifications:
   email:
   - josef+travis-time@sayhello.com

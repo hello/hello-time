@@ -26,7 +26,7 @@ before_deploy:
 - cp target/$APP_NAME-$BUILD_NUMBER.jar $TEMP_DIR/opt/hello/$APP_NAME.jar
 - fpm --force -s dir -C $TEMP_DIR -t deb --name "$APP_NAME" --version $BUILD_NUMBER --config-files etc/hello .
 - cp ${APP_NAME}_${BUILD_NUMBER}_amd64.deb configs/
-- if [ "$TRAVIS_BRANCH" == "canary" ]; then cp configs/${APP_NAME}_${BUILD_NUMBER}_amd64.deb configs/${APP_NAME}-canary_${BUILD_NUMBER}_amd64.deb; fi
+- if [ "$TRAVIS_BRANCH" == "canary" ]; then mv configs/${APP_NAME}_${BUILD_NUMBER}_amd64.deb configs/${APP_NAME}-canary_${BUILD_NUMBER}_amd64.deb; fi
 after_deploy:
 - git config --global user.email "builds@travis-ci.com"
 - git config --global user.name "Travis CI"

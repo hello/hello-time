@@ -131,7 +131,7 @@ public class TimeResource extends BaseResource {
         final Optional<SignedMessage.Error> error = signedMessage.validateWithKey(optionalKeyBytes.get());
 
         if (error.isPresent()) {
-            LOGGER.error("error=invalid_key device_id={} key={}", deviceId, Hex.encodeHexString(optionalKeyBytes.get()));
+            LOGGER.error("error=invalid_key device_id={} key={}...", deviceId, Hex.encodeHexString(optionalKeyBytes.get()).substring(0, 8));
             return plainTextError(Response.Status.UNAUTHORIZED, "");
         }
         LOGGER.debug("{}", ntpReceiveTimestamp.toDateString());

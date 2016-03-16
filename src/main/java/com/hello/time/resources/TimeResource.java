@@ -69,7 +69,6 @@ public class TimeResource extends BaseResource {
         this.keyStore = keyStore;
         this.metrics= metricRegistry;
         this.groupFlipper = groupFlipper;
-        //TODO: Figure out what metrics are valuable and update these.
         this.senseClockOutOfSync = metrics.meter(name(TimeResource.class, "sense-clock-out-sync"));
         this.drift = metrics.histogram(name(TimeResource.class, "sense-drift"));
     }

@@ -10,6 +10,9 @@ graphite:
     - xx-responses
     - com.hello
 
+ntp_clock_tolerance: 60000
+ntp_client_timeout: 2000
+
 server:
   adminMinThreads: 1
   adminMaxThreads: 64

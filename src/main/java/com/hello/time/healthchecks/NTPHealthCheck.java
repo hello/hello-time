@@ -10,7 +10,6 @@ import org.apache.commons.net.ntp.TimeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Date;
 import java.util.Set;
@@ -44,12 +43,14 @@ public class NTPHealthCheck extends HealthCheck {
     final Optional<Date> ntpDate = getNTPDate();
     final Date nowDate = new Date();
     if(!ntpDate.isPresent()) {
+      LOGGER.error("error=ntp_request");
       return Result.unhealthy("Failed to get NTP time.");
     }
 
     if (Math.abs(nowDate.getTime() - ntpDate.get().getTime()) < clockTolerance) {
       return Result.healthy();
     } else {
+      LOGGER.error("error=ntp_clock_tolerance current_ts={} ntp_ts={}", nowDate.getTime(), ntpDate.get().getTime());
       return Result.unhealthy("Server time does not match NTP.");
     }
   }
@@ -74,14 +75,12 @@ public class NTPHealthCheck extends HealthCheck {
         final Date date = new Date(info.getMessage().getTransmitTimeStamp().getTime());
         return Optional.of(date);
       }
-      catch (IOException e) {
-        LOGGER.error("error=ntp_host exception={}", e.toString());
+      catch (Exception e) {
+        LOGGER.error("error=ntp_host exception={}", e.getMessage().replace(" ", "-"));
       }
     }
 
     client.close();
-
-    return null;
-
+    return Optional.absent();
   }
 }

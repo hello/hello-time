@@ -7,6 +7,8 @@ import com.codahale.metrics.health.HealthCheck;
 
 import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -18,6 +20,7 @@ import java.util.Set;
  */
 public class NTPHealthCheck extends HealthCheck {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(NTPHealthCheck.class);
   public static Integer DEFAULT_CLOCK_TOLERANCE_MILLIS = 60 * 1000;
   public static Integer DEFAULT_NTP_CLIENT_TIMEOUT_MILLIS = 2 * 1000;
   private Integer clockTolerance;
@@ -72,7 +75,7 @@ public class NTPHealthCheck extends HealthCheck {
         return Optional.of(date);
       }
       catch (IOException e) {
-        e.printStackTrace();
+        LOGGER.error("error=ntp_host exception={}", e.toString());
       }
     }
 

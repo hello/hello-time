@@ -27,6 +27,7 @@ import com.hello.suripu.core.db.KeyStoreDynamoDB;
 import com.hello.suripu.coredw8.managers.DynamoDBClientManaged;
 import com.hello.suripu.coredw8.util.CustomJSONExceptionMapper;
 import com.hello.time.configuration.SuripuConfiguration;
+import com.hello.time.healthchecks.NTPHealthCheck;
 import com.hello.time.modules.RolloutModule;
 import com.hello.time.resources.TimeResource;
 import com.librato.rollout.RolloutClient;
@@ -149,6 +150,8 @@ public class HelloTime extends Application<SuripuConfiguration> {
     // Make sure we can connect
     environment.healthChecks().register("keystore-healthcheck", new DynamoDbHealthCheck(senseKeyStoreDynamoDBClient));
     environment.healthChecks().register("features-healthcheck", new DynamoDbHealthCheck(featuresDynamoDBClient));
+    environment.healthChecks().register("ntp-healthcheck", new NTPHealthCheck(configuration.getNtpClockTolerance(), configuration.getNtpClientTimeout()));
+
   }
 
 

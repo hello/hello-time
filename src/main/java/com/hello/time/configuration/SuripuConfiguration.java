@@ -26,9 +26,22 @@ public class SuripuConfiguration extends Configuration {
     @Valid
     @JsonProperty("debug")
     private Boolean debug = Boolean.FALSE;
-
     public Boolean getDebug() {
         return debug;
+    }
+
+    @Valid
+    @JsonProperty("ntp_clock_tolerance")
+    private Integer ntpClockTolerance;
+    public Integer getNtpClockTolerance() {
+        return ntpClockTolerance;
+    }
+
+    @Valid
+    @JsonProperty("ntp_client_timeout")
+    private Integer ntpClientTimeout;
+    public Integer getNtpClientTimeout() {
+        return ntpClientTimeout;
     }
 
     @Valid

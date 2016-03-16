@@ -39,7 +39,7 @@ server:
 logging:
   level: INFO
   loggers:
-    com.hello.time: DEBUG
+    com.hello.time: INFO
   appenders:
     - type: file
       threshold: DEBUG

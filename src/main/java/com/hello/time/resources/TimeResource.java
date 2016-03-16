@@ -18,6 +18,7 @@ import com.hello.suripu.core.util.SignedMessage;
 import com.librato.rollout.RolloutClient;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.net.ntp.TimeStamp;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,8 +32,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import static com.codahale.metrics.MetricRegistry.name;
 
@@ -44,8 +48,10 @@ public class TimeResource extends BaseResource {
     RolloutClient featureFlipper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TimeResource.class);
-    private static final String LOCAL_OFFICE_IP_ADDRESS = "199.87.82.114";
+    private static final String LOCAL_OFFICE_IP_ADDRESS = "204.28.123.251";
     private static final String FIRMWARE_DEFAULT = "0";
+    private static final int CLOCK_SKEW_TOLERATED_IN_HOURS = 2;
+    private static final int CLOCK_DRIFT_MEASUREMENT_THRESHOLD = 2;
 
     private final KeyStore keyStore;
     private final GroupFlipper groupFlipper;
@@ -87,7 +93,7 @@ public class TimeResource extends BaseResource {
         final String topFW = (this.request.getHeader(HelloHttpHeader.TOP_FW_VERSION) != null) ? this.request.getHeader(HelloHttpHeader.TOP_FW_VERSION) : FIRMWARE_DEFAULT;
         final String middleFW = (this.request.getHeader(HelloHttpHeader.MIDDLE_FW_VERSION) != null) ? this.request.getHeader(HelloHttpHeader.MIDDLE_FW_VERSION) : FIRMWARE_DEFAULT;
 
-        LOGGER.debug("action=request-time device_id = {}", debugSenseId);
+        LOGGER.info("action=request-time device_id={}", debugSenseId);
 
         Ntp.NTPDataPacket data = null;
 
@@ -126,10 +132,20 @@ public class TimeResource extends BaseResource {
         final Optional<SignedMessage.Error> error = signedMessage.validateWithKey(optionalKeyBytes.get());
 
         if (error.isPresent()) {
-            LOGGER.error("{} sense_id={}", error.get().message, deviceId);
+            LOGGER.error("error=unauthorized device_id={} {}", deviceId, error.get().message);
             return plainTextError(Response.Status.UNAUTHORIZED, "");
         }
         LOGGER.debug("{}", ntpReceiveTimestamp.toDateString());
+
+        final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US);
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        final TimeStamp ntpOriginTimestamp = new TimeStamp(data.getOriginTs());
+        if(isClockOutOfSync(new DateTime(ntpOriginTimestamp.getDate()), new DateTime(ntpReceiveTimestamp.getDate()), CLOCK_SKEW_TOLERATED_IN_HOURS)) {
+
+            LOGGER.error("error=clock-sync device_id={} origin_time={} received_time={}", deviceId, formatter.format(ntpOriginTimestamp.getDate()), formatter.format(ntpReceiveTimestamp.getDate()));
+            senseClockOutOfSync.mark(1);
+        }
 
         final Ntp.NTPDataPacket.Builder ntpDataPacketBuilder = Ntp.NTPDataPacket.newBuilder()
             .setReferenceTs(data.getReferenceTs())
@@ -144,13 +160,13 @@ public class TimeResource extends BaseResource {
         final Optional<byte[]> signedResponse = SignedMessage.sign(ntpPacket.toByteArray(), optionalKeyBytes.get());
 
         if (!signedResponse.isPresent()) {
-            LOGGER.error("Failed signing message");
+            LOGGER.error("error=fail_message_sign device_id={}", deviceId);
             return plainTextError(Response.Status.INTERNAL_SERVER_ERROR, "");
         }
 
         final int responseLength = signedResponse.get().length;
         if (responseLength > 2048) {
-            LOGGER.warn("response_size too large ({}) for device_id= {}", responseLength, deviceId);
+            LOGGER.warn("warn=response_size response_size={} device_id={}", responseLength, deviceId);
         }
 
         return signedResponse.get();
@@ -168,5 +184,9 @@ public class TimeResource extends BaseResource {
         }
         return keyStore.get(deviceId);
 
+    }
+
+    public static boolean isClockOutOfSync(final DateTime sampleTime, final DateTime referenceTime, final Integer offsetThreshold) {
+        return sampleTime.isAfter(referenceTime.plusHours(offsetThreshold)) || sampleTime.isBefore(referenceTime.minusHours(offsetThreshold));
     }
 }

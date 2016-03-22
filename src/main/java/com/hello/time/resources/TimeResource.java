@@ -88,11 +88,11 @@ public class TimeResource extends BaseResource {
         if (debugSenseId == null) {
             debugSenseId = "";
         }
-
+        final String ipAddress = getIpAddress(request);
         final String topFW = (this.request.getHeader(HelloHttpHeader.TOP_FW_VERSION) != null) ? this.request.getHeader(HelloHttpHeader.TOP_FW_VERSION) : FIRMWARE_DEFAULT;
         final String middleFW = (this.request.getHeader(HelloHttpHeader.MIDDLE_FW_VERSION) != null) ? this.request.getHeader(HelloHttpHeader.MIDDLE_FW_VERSION) : FIRMWARE_DEFAULT;
 
-        LOGGER.info("action=request-time device_id={}", debugSenseId);
+        LOGGER.info("action=request-time device_id={} ip_address={} top_fw={} middle_fw={}", debugSenseId, ipAddress, topFW, middleFW);
 
         Ntp.NTPDataPacket data = null;
 

@@ -112,7 +112,6 @@ public class TimeResource extends BaseResource {
 
         final String deviceId = debugSenseId;
         final List<String> groups = groupFlipper.getGroups(deviceId);
-        final String ipAddress = getIpAddress(request);
         final List<String> ipGroups = groupFlipper.getGroups(ipAddress);
 
 

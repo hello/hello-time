@@ -16,6 +16,7 @@ import com.hello.suripu.core.resources.BaseResource;
 import com.hello.suripu.core.util.HelloHttpHeader;
 import com.hello.suripu.core.util.SignedMessage;
 import com.librato.rollout.RolloutClient;
+import io.dropwizard.jersey.caching.CacheControl;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.net.ntp.TimeStamp;
 import org.joda.time.DateTime;
@@ -73,7 +74,7 @@ public class TimeResource extends BaseResource {
         this.drift = metrics.histogram(name(TimeResource.class, "sense-drift"));
     }
 
-
+    @CacheControl(noCache = true)
     @POST
     @Path("/")
     @Consumes(AdditionalMediaTypes.APPLICATION_PROTOBUF)

@@ -107,7 +107,7 @@ public class TimeResource extends BaseResource {
         LOGGER.debug("Received protobuf message {}", TextFormat.shortDebugString(data));
 
         if (!data.hasOriginTs()) {
-            LOGGER.error("error=empty-origin_ts");
+            LOGGER.error("error=empty-origin_ts device_id={}", debugSenseId);
             return plainTextError(Response.Status.BAD_REQUEST, "empty origin timestamp");
         }
 

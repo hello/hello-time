@@ -2,14 +2,11 @@ package com.hello.time.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hello.suripu.coredw8.configuration.GraphiteConfiguration;
-import com.hello.suripu.core.configuration.KinesisConfiguration;
-import com.hello.suripu.core.configuration.KinesisLoggerConfiguration;
-import com.hello.suripu.core.configuration.NewDynamoDBConfiguration;
+import com.hello.suripu.coredw8.configuration.NewDynamoDBConfiguration;
+
 import io.dropwizard.Configuration;
-import io.dropwizard.db.DataSourceFactory;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 public class SuripuConfiguration extends Configuration {

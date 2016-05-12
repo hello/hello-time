@@ -5,9 +5,9 @@ import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.graphite.Graphite;
 import com.codahale.metrics.graphite.GraphiteReporter;
 import com.hello.dropwizard.mikkusu.helpers.JacksonProtobufProvider;
@@ -25,6 +25,7 @@ import com.hello.suripu.core.db.FeatureStore;
 import com.hello.suripu.core.db.KeyStore;
 import com.hello.suripu.core.db.KeyStoreDynamoDB;
 import com.hello.suripu.coredw8.managers.DynamoDBClientManaged;
+import com.hello.suripu.coredw8.metrics.RegexMetricFilter;
 import com.hello.suripu.coredw8.util.CustomJSONExceptionMapper;
 import com.hello.time.configuration.SuripuConfiguration;
 import com.hello.time.healthchecks.NTPHealthCheck;
@@ -92,13 +93,16 @@ public class HelloTime extends Application<SuripuConfiguration> {
       final String env = (configuration.getDebug()) ? "dev" : "prod";
       final String prefix = String.format("%s.%s.hello-time", apiKey, env);
 
+      final ImmutableList<String> metrics = ImmutableList.copyOf(configuration.getGraphite().getIncludeMetrics());
+      final RegexMetricFilter metricFilter = new RegexMetricFilter(metrics);
+
       final Graphite graphite = new Graphite(new InetSocketAddress(graphiteHostName, 2003));
 
       final GraphiteReporter reporter = GraphiteReporter.forRegistry(environment.metrics())
           .prefixedWith(prefix)
           .convertRatesTo(TimeUnit.SECONDS)
           .convertDurationsTo(TimeUnit.MILLISECONDS)
-          .filter(MetricFilter.ALL)
+          .filter(metricFilter)
           .build(graphite);
       reporter.start(interval, TimeUnit.SECONDS);
 

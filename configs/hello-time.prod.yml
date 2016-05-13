@@ -62,7 +62,7 @@ dynamodb:
   tables:
     features : features
     sense_key_store : key_store
-    teams : teams
+    teams : prod_teams
 
   endpoints:
       features : http://dynamodb.us-east-1.amazonaws.com

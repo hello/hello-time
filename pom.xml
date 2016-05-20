@@ -45,9 +45,25 @@
                 <updatePolicy>always</updatePolicy>
                 <checksumPolicy>warn</checksumPolicy>
             </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
             <id>s3.release</id>
             <name>Hello Releases</name>
             <url>s3://hello-maven/release</url>
+        </repository>
+        <repository>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </snapshots>
+            <id>s3.snapshot</id>
+            <name>Hello Snapshots</name>
+            <url>s3://hello-maven/snapshot</url>
         </repository>
     </repositories>
 

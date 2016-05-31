@@ -117,7 +117,7 @@ public class TimeResource extends BaseResource {
 
 
         if (featureFlipper.deviceFeatureActive(FeatureFlipper.PRINT_RAW_PB, deviceId, groups)) {
-            LOGGER.debug("RAW_PB for device_id={} {}", deviceId, Hex.encodeHexString(body));
+            LOGGER.info("RAW_PB for device_id={} {}", deviceId, Hex.encodeHexString(body));
         }
 
 

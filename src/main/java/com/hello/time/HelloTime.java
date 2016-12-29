@@ -1,32 +1,31 @@
 package com.hello.time;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
 import com.codahale.metrics.graphite.Graphite;
 import com.codahale.metrics.graphite.GraphiteReporter;
 import com.hello.dropwizard.mikkusu.helpers.JacksonProtobufProvider;
 import com.hello.dropwizard.mikkusu.resources.PingResource;
 import com.hello.dropwizard.mikkusu.resources.VersionResource;
 import com.hello.suripu.core.ObjectGraphRoot;
-import com.hello.suripu.core.db.TeamStore;
-import com.hello.suripu.core.flipper.DynamoDBAdapter;
-import com.hello.suripu.core.flipper.GroupFlipper;
-import com.hello.suripu.coredw8.filters.SlowRequestsFilter;
-import com.hello.suripu.coredw8.health.DynamoDbHealthCheck;
-import com.hello.suripu.coredw8.clients.AmazonDynamoDBClientFactory;
 import com.hello.suripu.core.configuration.DynamoDBTableName;
 import com.hello.suripu.core.db.FeatureStore;
 import com.hello.suripu.core.db.KeyStore;
 import com.hello.suripu.core.db.KeyStoreDynamoDB;
-import com.hello.suripu.coredw8.managers.DynamoDBClientManaged;
-import com.hello.suripu.coredw8.metrics.RegexMetricFilter;
-import com.hello.suripu.coredw8.util.CustomJSONExceptionMapper;
+import com.hello.suripu.core.db.TeamStore;
+import com.hello.suripu.core.flipper.DynamoDBAdapter;
+import com.hello.suripu.core.flipper.GroupFlipper;
+import com.hello.suripu.coredropwizard.clients.AmazonDynamoDBClientFactory;
+import com.hello.suripu.coredropwizard.filters.SlowRequestsFilter;
+import com.hello.suripu.coredropwizard.health.DynamoDbHealthCheck;
+import com.hello.suripu.coredropwizard.managers.DynamoDBClientManaged;
+import com.hello.suripu.coredropwizard.metrics.RegexMetricFilter;
+import com.hello.suripu.coredropwizard.util.CustomJSONExceptionMapper;
 import com.hello.time.configuration.SuripuConfiguration;
 import com.hello.time.healthchecks.NTPHealthCheck;
 import com.hello.time.modules.RolloutModule;
@@ -46,8 +45,8 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 
-import io.dropwizard.jdbi.bundles.DBIExceptionsBundle;
 import io.dropwizard.Application;
+import io.dropwizard.jdbi.bundles.DBIExceptionsBundle;
 import io.dropwizard.server.AbstractServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;

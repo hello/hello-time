@@ -26,7 +26,6 @@ server:
       port: 1112
       idleTimeout: 25 seconds
   requestLog:
-    timeZone: UTC
     appenders:
       - type: file
         currentLogFilename: /var/log/hello-time/hello-time-access.log

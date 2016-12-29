@@ -25,7 +25,6 @@ server:
     - type: http
       port: 1112
   requestLog:
-    timeZone: UTC
     appenders:
       - type: console
 #      - type: file

@@ -7,15 +7,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.7</java.version>
-        <suripu.version>0.8.5147</suripu.version>
-        <jodatime.version>20150319</jodatime.version>
-        <dropwizard.version>0.8.2</dropwizard.version>
-        <metrics.version>3.1.0</metrics.version>
         <aws.sdk.version>1.10.34</aws.sdk.version>
-        <librato.reporter.version>2.2.0.5</librato.reporter.version>
         <dagger.version>1.2.2</dagger.version>
+        <dropwizard.version>1.0.0</dropwizard.version>
+        <java.version>1.8</java.version>
+        <joda.version>2.9.6</joda.version>
+        <librato.reporter.version>2.2.0.5</librato.reporter.version>
+        <metrics.version>3.1.2</metrics.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <suripu.version>0.8.5839</suripu.version>
     </properties>
 
     <distributionManagement>
@@ -175,7 +175,7 @@
         </dependency>
         <dependency>
             <groupId>com.hello.suripu</groupId>
-            <artifactId>suripu-coredw8</artifactId>
+            <artifactId>suripu-coredropwizard</artifactId>
             <version>${suripu.version}</version>
         </dependency>
         <dependency>
@@ -240,24 +240,16 @@
             <version>1.3</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
             <version>1.9.5</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
-            <groupId>suripu-jodatime</groupId>
-            <artifactId>suripu-jodatime</artifactId>
-            <version>${jodatime.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${joda.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>

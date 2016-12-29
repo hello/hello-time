@@ -13,7 +13,6 @@
         <jackson.version>2.8.1</jackson.version>
         <java.version>1.8</java.version>
         <joda.version>2.9.6</joda.version>
-        <librato.reporter.version>2.2.0.5</librato.reporter.version>
         <metrics.version>3.1.2</metrics.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <suripu.version>0.8.5839</suripu.version>

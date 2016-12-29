@@ -1,8 +1,8 @@
 package com.hello.time.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.hello.suripu.coredw8.configuration.GraphiteConfiguration;
-import com.hello.suripu.coredw8.configuration.NewDynamoDBConfiguration;
+import com.hello.suripu.coredropwizard.configuration.GraphiteConfiguration;
+import com.hello.suripu.coredropwizard.configuration.NewDynamoDBConfiguration;
 
 import io.dropwizard.Configuration;
 

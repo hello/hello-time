@@ -2,7 +2,7 @@ package com.hello.time.modules;
 
 import com.hello.suripu.core.db.FeatureStore;
 import com.hello.suripu.core.flipper.DynamoDBAdapter;
-import com.hello.suripu.coredw8.resources.BaseResource;
+import com.hello.suripu.coredropwizard.resources.BaseResource;
 import com.hello.time.HelloTime;
 import com.hello.time.resources.TimeResource;
 import com.librato.rollout.RolloutAdapter;

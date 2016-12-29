@@ -14,7 +14,7 @@ import com.hello.suripu.core.flipper.FeatureFlipper;
 import com.hello.suripu.core.flipper.GroupFlipper;
 import com.hello.suripu.core.util.HelloHttpHeader;
 import com.hello.suripu.core.util.SignedMessage;
-import com.hello.suripu.coredw8.resources.BaseResource;
+import com.hello.suripu.coredropwizard.resources.BaseResource;
 import com.librato.rollout.RolloutClient;
 import io.dropwizard.jersey.caching.CacheControl;
 import org.apache.commons.codec.binary.Hex;

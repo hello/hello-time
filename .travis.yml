@@ -45,7 +45,7 @@ deploy:
   region: us-east-1
   on:
     tags: false
-    branch: PRODUCTION
+    branch: master
 - provider: s3
   access_key_id: $CI_DEPLOY_USERNAME
   secret_access_key: $CI_DEPLOY_PASSWORD
@@ -60,7 +60,6 @@ deploy:
 branches:
   only:
   - master
-  - PRODUCTION
 notifications:
   email:
   - josef+travis-time@sayhello.com
